@@ -6,13 +6,140 @@
   const int maintenance_pin = 2;
 
 // Light durations initialization
-  const unsigned long R_time = 6;    // Red light duration
-  const unsigned long DR_time = 1;    // Delay red light duration
-  const unsigned long G_time = 5;     // Green light duration
-  const unsigned long PG_time = 1;    // Pale green light duration
-  const int G_level = 200;  // Green brightness level
+  const unsigned long time_scale = 1000;
+  const unsigned long DR_time = 1 * time_scale;    // Delay red light duration
+  const unsigned long G_time = 5 * time_scale;     // Green light duration
+  const unsigned long PG_time = 1 * time_scale;    // Pale green light duration
   const int PG_level = 100; // Pale green brightness level
+
+  enum class Light {
+      GREEN = 0,
+      PALE = 1,
+      RED = 2,
+      OFF = 3,
+  };
+
+  enum class Street {
+      A = 0,
+      B = 1,
+  };
+
+  Light operator ++ (Light &state, int) {
+      switch (state) {
+          // Green
+          case Light::GREEN:
+              state = Light::PALE;
+              break;
+          // Pale Green
+          case Light::PALE:
+              state = Light::RED;
+              break;
+          // Red
+          case Light::RED:
+              state = Light::GREEN;
+              break;
+          // Off
+          case Light::OFF:
+          default:
+              state = Light::OFF;
+              break;
+      }
+      return state;
+  }
+
+  Light operator ! (Light state) {
+      if (state == Light::OFF) {
+          return Light::GREEN;
+      }
+      return Light::OFF;
+  }
+
+  Street operator ! (Street street) {
+      switch (street) {
+          case Street::A:
+              return Street::B;
+          case Street::B:
+              return Street::A;
+      }
+  }
+
   bool maintenance_state;
+  bool next_maintenance;
+  // See enum Light
+  Light state;
+  // False = A, True = B
+  Street street;
+  bool ped;
+  unsigned long next_time;
+
+
+void writeLight(Light state, Street street) {
+    int pin_red, pin_green;
+    switch (street) {
+        case Street::A:
+            pin_red = RA;
+            pin_green = GA;
+        case Street::B:
+            pin_red = RB;
+            pin_green = GB;
+    }
+    switch (state) {
+        // Green
+        case Light::GREEN:
+            digitalWrite(pin_red,LOW);
+            digitalWrite(pin_green,HIGH);
+            break;
+        // Pale Green
+        case Light::PALE:
+            digitalWrite(pin_red,LOW);
+            analogWrite(pin_green,PG_level);
+            break;
+        // Red
+        case Light::RED:
+            digitalWrite(pin_red,HIGH);
+            digitalWrite(pin_green,LOW);
+            break;
+        // Off
+        case Light::OFF:
+        default:
+            digitalWrite(pin_red,LOW);
+            digitalWrite(pin_green,LOW);
+            break;
+    }
+}
+
+void writeState(Light state, Street street, bool maintenance_state, bool ped) {
+    writeLight(Light::RED, !street);
+    if (maintenance_state) {
+        writeLight(Light::RED, street);
+        return;
+    }
+    if (ped) {
+        writeLight(Light::GREEN, street);
+        return;
+    }
+    writeLight(state, street);
+}
+
+unsigned long timeout(Light state) {
+    unsigned long timeout;
+    switch (state) {
+        case Light::GREEN:
+            timeout = G_time;
+            break;
+        case Light::PALE:
+            timeout = PG_time;
+            break;
+        case Light::RED:
+            timeout = DR_time;
+            break;
+        case Light::OFF:
+        default:
+            timeout = 0;
+            break;
+    }
+    return timeout;
+}
 
 void setup() {
   Serial.begin(9600);
@@ -23,68 +150,26 @@ void setup() {
   pinMode(maintenance_pin,INPUT);
 
   // Explicitly defining initial conditions
-  digitalWrite(RA,LOW);
-  digitalWrite(RB,HIGH);
-  analogWrite(GA,G_level);
-  analogWrite(GB,0);
+  maintenance_state = false;
+  next_maintenance = false;
+  state = Light::GREEN;
+  street = Street::A;
+  ped = false;
+  next_time  = millis() + G_time;
+  writeState(state, street, maintenance_state, ped);
 }
 
 void loop() {
-  maintenance_state = digitalRead(maintenance_pin); // Read value of maintenance pin
-  Serial.println(maintenance_state);
-  if (maintenance_state == HIGH){
-    // If maintence is in progress turn both red lights on
-    digitalWrite(RA,HIGH);
-    digitalWrite(RB,HIGH);
-    analogWrite(GA,0);
-    analogWrite(GB,0);
-
-    return;
-    }
-  else if (maintenance_state == LOW) {
-
-    // Phase 6:
-      // Street A red stays off
-      analogWrite(GA,PG_level); // Dim street A green to pale green
-      // Street B red stays on
-      // Street B green stays off
-      delay(1000*PG_time);
-
-    // Phase 1:
-      analogWrite(GA,0); // Turn street A pale green off
-      digitalWrite(RA,HIGH); // Turn street A red on
-      // Street B red changes to delay red but no real change
-      // Street B green is already off
-      delay(1000*DR_time);
-
-     // Phase 2:
-      // Street A red stays on
-      // Street A green stays off
-      digitalWrite(RB,LOW); // Turn street B delay red off
-      analogWrite(GB,G_level); // Turn street B green on
-      delay(1000*G_time);
-
-     // Phase 3:
-      // Street A red stays on
-      // Street A green stays off
-      // Street B red stays off
-      analogWrite(GB,PG_level); // Dim street B green to pale green
-      delay(1000*PG_time);
-
-     // Phase 4:
-      // Street A red changes to delay red but no real change
-      // Street A green stays off
-      analogWrite(GB,0); // Turn street B pale green off
-      digitalWrite(RB,HIGH); // Turn street B red on
-      delay(1000*DR_time);
-
-     // Phase 5:
-      digitalWrite(RA,LOW); // Turn street A delay red off
-      analogWrite(GA,G_level); // Turn street A green on
-      // Street B red stays on
-      // Street B green stays off
-      delay(1000*G_time);
-
-    }
-
+  next_maintenance = next_maintenance | digitalRead(maintenance_pin); // Read value of maintenance pin
+  unsigned long now = millis();
+  if (now >= next_time) {
+      maintenance_state = maintenance_state ^ next_maintenance;
+      if (maintenance_state) {
+          state = Light::RED;
+          return;
+      }
+      next_time = millis() + timeout(state);
+      state++;
+      writeState(state, street, maintenance_state, ped);
+  }
 }
