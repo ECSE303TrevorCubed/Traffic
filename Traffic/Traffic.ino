@@ -79,9 +79,11 @@ void writeLight(Light state, Street street) {
         case Street::A:
             pin_red = RA;
             pin_green = GA;
+        break;
         case Street::B:
             pin_red = RB;
             pin_green = GB;
+            break;
     }
     switch (state) {
         // Green
@@ -142,7 +144,7 @@ unsigned long timeout(Light state) {
 }
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   pinMode(RA,OUTPUT);
   pinMode(GA,OUTPUT);
   pinMode(RB,OUTPUT);
@@ -163,7 +165,9 @@ void loop() {
   next_maintenance = next_maintenance | digitalRead(maintenance_pin); // Read value of maintenance pin
   unsigned long now = millis();
   if (now >= next_time) {
+    Serial.println("Hello, World!");
       maintenance_state = maintenance_state ^ next_maintenance;
+      next_maintenance = false;
       if (maintenance_state) {
           state = Light::RED;
           return;
