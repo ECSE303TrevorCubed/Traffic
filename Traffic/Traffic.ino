@@ -6,8 +6,9 @@ const int GB = 6;
 
 const int maintenance_pin = 2;
 
-const int ped_a_light = 13;
+const int ped_a_light = 11;
 const int ped_b_light = 9;
+const int ped_central_led = LED_BUILTIN;
 const int ped_a_button = 12;
 const int ped_b_button = 8;
 
@@ -127,6 +128,7 @@ void update_lights() {
     writeLight(Light::RED, Street::B);
     digitalWrite(ped_a_light, LOW);
     digitalWrite(ped_b_light, LOW);
+    digitalWrite(ped_central_led, LOW);
     return;
   }
 
@@ -146,9 +148,11 @@ void update_lights() {
       light_a = (active_street == Street::A) ? state : Light::RED;
       digitalWrite(ped_b_light, HIGH);
     }
+    digitalWrite(ped_central_led, HIGH);
   } else {
     digitalWrite(ped_a_light, LOW);
     digitalWrite(ped_b_light, LOW);
+    digitalWrite(ped_central_led, LOW);
   }
 
   writeLight(light_a, Street::A);
@@ -174,6 +178,7 @@ void setup() {
 
   pinMode(ped_a_light, OUTPUT);
   pinMode(ped_b_light, OUTPUT);
+  pinMode(ped_central_led, OUTPUT);
   pinMode(ped_a_button, INPUT);
   pinMode(ped_b_button, INPUT);
 
