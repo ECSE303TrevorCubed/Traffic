@@ -208,10 +208,10 @@ void loop() {
   last_maintenance_reading = maintenance_reading;
 
   // poll pedestrians
-  if (digitalRead(ped_a_button) == HIGH && (!ped_active && ped_street == Street::A)) {
+  if (digitalRead(ped_a_button) == HIGH && !(ped_active && ped_street == Street::A)) {
     ped_req_a = true;
   }
-  if (digitalRead(ped_b_button) == HIGH && (!ped_active && ped_street == Street::B)) {
+  if (digitalRead(ped_b_button) == HIGH && !(ped_active && ped_street == Street::B)) {
     ped_req_b = true;
   }
 
