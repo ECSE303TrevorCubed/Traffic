@@ -27,11 +27,6 @@ enum class Light {
   OFF = 3,
 };
 
-enum class Street {
-  A = 0,
-  B = 1,
-};
-
 Light operator++(Light &state, int) {
   switch (state) {
     // Green
@@ -55,12 +50,10 @@ Light operator++(Light &state, int) {
   return state;
 }
 
-Light operator!(Light state) {
-  if (state == Light::OFF) {
-    return Light::GREEN;
-  }
-  return Light::OFF;
-}
+enum class Street {
+  A = 0,
+  B = 1,
+};
 
 Street operator!(Street street) {
   switch (street) {
@@ -228,13 +221,7 @@ void loop() {
 
   // advance state machine
   if (now >= next_time) {
-    if (state == Light::GREEN) {
-      state = Light::PALE;
-      next_time = now + timeout(state);
-    } else if (state == Light::PALE) {
-      state = Light::RED;
-      next_time = now + timeout(state);
-    } else if (state == Light::RED) {
+    if (state == Light::RED) {
       // Only freeze intersection here since its safe
       if (maintenance_active) {
         update_lights();
@@ -259,10 +246,10 @@ void loop() {
       if (ped_active && active_street == ped_street) {
         active_street = !active_street;
       }
-
-      state = Light::GREEN;
-      next_time = now + timeout(state);
     }
+
+    state++;
+    next_time = now + timeout(state);
     update_lights();
   }
 }
