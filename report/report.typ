@@ -37,11 +37,6 @@ We implemented the entire circuit for both parts on a single breadboard directly
 - 220 Ohm resistors were used to wire up all LEDs used in the circuit
 
 == Part 1: One-way Traffic
-#mermaid-figure(
-  read("part1.mmd"),
-  caption: [One-way Traffic Controller State Transition Diagram],
-)
-
 1. Implemented strongly typed ```cpp enum class```'s with an overloaded postfix increment operator and overloaded boolean not operator for clean code to implement the state transitions
 2. ```cpp delay()``` calls were avoided entirely to prevent unresponsive inputs, Timing was instead handled using ```cpp millis()``` calls coupled with tracked timestamps via ```cpp next_time = now + timeout(state)```
 3. Solid green LEDs were shown for the standard 'Go' signal for vehicles. This phase lasts 50 seconds
@@ -50,11 +45,6 @@ We implemented the entire circuit for both parts on a single breadboard directly
 6. An overlapping period was implemented where both states are at their red state to minimize collision hazards
 
 == Part 2: Pedestrian Traffic
-#mermaid-figure(
-  read("part2.mmd"),
-  caption: [Pedestrian Traffic Controller State Transition Diagram],
-)
-
 1. Tracked pedestrian button requests that can occur at arbitrary moments in the cycle by polling every iteration of ```cpp loop()```. Internal latches (```cpp ped_req_a = true``` or ```cpp ped_req_b = true```) are managed to make it so that pedestrians don't need to time their button presses precisely when they'd have the right-of-way
 2. Pedestrian crosswalk signals (yellow LEDs) are only enabled when both directions have red lights, as is the case in real life. During this time, the crosswalk not involving the pedestrian is allowed to continue its cycle, though the pedestrian's crosswalk remains red for vehicles for safety
 3. The crossing cycle lasts a full 60 seconds and is calculated with ```cpp ped_end_time = now + ped_time```. During this time, the corresponding LED is enabled and the builtin LED is turned on when it is safe to cross. The standard cycle continues for vehicles once this cycle is over
@@ -62,6 +52,12 @@ We implemented the entire circuit for both parts on a single breadboard directly
 = Results and Observations
 
 === Part 1: One-way Traffic
+#mermaid-figure(
+  read("part1.mmd"),
+  caption: [One-way Traffic Controller State Transition Diagram],
+  width: 80%,
+)
+
 #figure(
   image("part1.jpeg", width: 85%),
   caption: [One-way Traffic Controller Circuit],
@@ -70,6 +66,12 @@ We implemented the entire circuit for both parts on a single breadboard directly
 // TODO: Describe observations related to the state machine/flowchart
 
 === Part 2: Pedestrian Traffic
+#mermaid-figure(
+  read("part2.mmd"),
+  caption: [Pedestrian Traffic Controller State Transition Diagram],
+  width: 85%,
+)
+
 #figure(
   image("part2.jpeg", width: 85%),
   caption: [Pedestrian Traffic Controller Circuit],
