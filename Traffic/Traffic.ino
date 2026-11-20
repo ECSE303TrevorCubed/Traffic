@@ -14,10 +14,10 @@ const int ped_b_button = 8;
 
 // Light durations initialization
 const unsigned long time_scale = 1000;
-const unsigned long DR_time = 1 * time_scale;  // Delay red light duration
-const unsigned long G_time = 5 * time_scale;   // Green light duration
-const unsigned long PG_time = 1 * time_scale;  // Pale green light duration
-const unsigned long ped_time = 10 * time_scale;
+const unsigned long DR_time = 10 * time_scale;  // Delay red light duration
+const unsigned long G_time = 50 * time_scale;   // Green light duration
+const unsigned long PG_time = 10 * time_scale;  // Pale green light duration
+const unsigned long ped_time = 60 * time_scale;
 const int PG_level = 100;  // Pale green brightness level
 
 enum class Light {
