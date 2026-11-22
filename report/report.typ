@@ -56,7 +56,7 @@ We implemented the entire circuit for both parts on a single breadboard directly
 #mermaid-figure(
   read("part1.mmd"),
   caption: [One-way Traffic Controller State Transition Diagram],
-  width: 80%,
+  width: 50%,
 )
 
 #figure(
