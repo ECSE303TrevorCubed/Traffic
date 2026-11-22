@@ -13,13 +13,12 @@
 #set heading(numbering: "1.")
 
 = Assignment Statement and Objective
+
 The main objective of this assignment is to design and emulate a traffic controller at a hypothetical intersection of two one-way streets, named A and B. This task is achieved through the use of an Arduino Uno micro controller and corresponding custom breadboard circuit to control red and green LED lights that are to represent this hypothetical intersection's traffic lights. In order to keep the scope of this endeavor manageable, two assumptions were made. Firstly, no turns are allowed on either street, meaning the hypothetical vehicles pass straight through the intersection. Secondly, the traffic light is capable of only showing solid green or solid red, meaning yellow lights or flashing lights in general are not considered.
 
 To accommodate the traffic controller's lack of yellow light functionality, the green light is to be dimmed for 10 seconds prior to turning red to inform drivers of the upcoming light change. Additionally, with safety in mind, an additional delay of 10 seconds is added to the end of the red lights interval. This ensures a period of time where the red lights for both streets are simultaneously on, reducing the likelihood of collisions if a vehicle happens to run through a recently switched on red light. With these considerations, the light timings are: 70 seconds red, 50 seconds green, 10 seconds dimmed green. Street A and B alternate these timings every one minute. In the situation where the traffic light is under maintenance, a toggle button was implemented that, if engaged, turns on the red lights and consequently turns off the green lights for both streets, signaling to traffic that the intersection is under repair and closed.
 
 To accomodate the crossing of pedestrians, functionality was added that lets a pedestrian interupt the natural traffic light cycle to cross either street safely. To allow crossing for both streets, two additonal buttons and their correpsonding dedicated pedestrian lights were installed to alert oncomming traffic. Now, any pedestrian intent on crossing a particular street need only press that street's button to make known their request. When this button is pressed, the associated pedestrian light turns on once that street has finished its current red or green light phase. The moment the pedestrian light turns on, the red light for that street also simultaneously turns on to stop that street's traffic. This pedestrian light stays lit for a total of 60 seconds, allowing plenty of time for the pedestrian to traverse the street safely. Meanwhile, the traffic lights for the opposite street continue uninterupted. After the pedestrian light turns off, the street's traffic lights will resyncronize and resume as normal. To enhance robustness, this system shall only respond to one pedestrian request at a time in the order they were requested in. In the situation where requests are processed simultaneously, priority is to be given to the pedesrian crossing street A. Additionally, the pedestrian light is to not respond to subsequent requests on the same street during the first requests interval.
-
-// TODO(Justin): Finish above section
 
 = Methodology and Steps
 
@@ -65,7 +64,7 @@ We implemented the entire circuit for both parts on a single breadboard directly
   caption: [One-way Traffic Controller Circuit],
 )
 
-// TODO: Describe observations related to the state machine/flowchart
+We observed that there are only 3 states per street, plus the maintenance state for a total of 7 states. Most states just operate in a circular motion, cycling through all regular states, except when the maintenance mode is active.
 
 === Part 2: Pedestrian Traffic
 #mermaid-figure(
@@ -79,7 +78,7 @@ We implemented the entire circuit for both parts on a single breadboard directly
   caption: [Pedestrian Traffic Controller Circuit],
 )
 
-// TODO: Instructions want: "Validate intuitively (not formally) that the above pedestrian crossing rules are safe"
+Similarly to the flowchart without the pedestrian lights, there is a main cycle that the states iterate between. We know that the pedestrians are safe since any state with a pedestrian light has the cross traffic lights off. We allow the parallel traffic to the pedestrians to continue as this does not pose a threat to walkers.
 
 = Conclusions
 
