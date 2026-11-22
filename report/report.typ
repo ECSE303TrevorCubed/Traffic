@@ -63,8 +63,9 @@ We implemented the entire circuit for both parts on a single breadboard directly
   image("part1.jpeg", width: 85%),
   caption: [One-way Traffic Controller Circuit],
 )
+// TODO: Describe observations related to the state machine/flowchart
 This state transition diagram illustrates the sequence of states in the emulated traffic controller. As shown, there are 6 active operating states, ignoring the maintenance state and pedestrian states. Each of these states corresponds to a specific allowable combination of either red, green, or pale green for each street. During normal operation, the controller progresses sequentially through a 140 second cycle, split into two 70 second halves. In the first 70 seconds, Street A has a 50 second green phase and a 10 second pale green warning phase, followed by a 10 second simultaneous interval in which Street A transitions to red while Street B enters its "delay red" phase. The remaining 70 seconds mirror this sequence for Street B. Additionally, pressing the maintenance button during either pale green phase switches the controller into a maintenance state. This is indicated by both streets' lights turning red and remaining so until the maintenance button is pressed again.
-
+=======
 We observed that there are only 3 states per street, plus the maintenance state for a total of 7 states. Most states just operate in a circular motion, cycling through all regular states, except when the maintenance mode is active.
 
 === Part 2: Pedestrian Traffic
@@ -80,12 +81,12 @@ We observed that there are only 3 states per street, plus the maintenance state 
 )
 
 The pedestrian crossing rules described above were determined to be safe through a few intuitive verifications.
-- The first safety concern is that a pedesrian may be permitted to cross when that street's traffic has not been stopped. This is not a concern since when the pedestrian light turns on the corresponding street's red light also turns on.
+- The first safety concern is that a pedestrian may be permitted to cross when that street's traffic has not been stopped. This is not a concern since when the pedestrian light turns on the corresponding street's red light also turns on.
 - The second concern is if the lights respond immediately to the pedestrian pressing the button, a red light may activate without warning (no pale green light) and cause more accidents. This is addressed by the fact that the pedestrian light only turns on after the current red or green light phase has completed.
-- A third issue, is if after the pedestrian light turns off that the traffic lights for the two streets become desyncronized. However, because both streets' lights use the same timings in their logic, they never get out of sync to begin with. Since the specified pedestrian crossing time is 60 seconds which is less than the total red cycle time of 70s, the interuption in the light cycle from the pedestrian light never exceeds one period.
-- A fourth concern, while more related to the management of heavy traffic such as during rush hour than explicitly saftey, is that if when a pedestrian crosses, all traffic is stopped for the allotted 60 seconds, traffic jams may increase unnecessarily  regardless if their paths intersect. This is also not an issue since traffic on the opposite street is allowed to continue normally.
-- In a similar light, if pedestrians could retrigger the pedestrian light within the interval of the first press, then traffic could be interupted for far longer than 60 seconds. Since the predestrian crossing button is only responsive to one press at a time, it fairly alternates between pedestrians crossing, and vehicles driving through the intersection.
-- The last concern is a matter of robustness. Namely, if pedestrians happen to press their respective buttons simultaneously, there is a contigency in place that gives priority over to the pedestrian crossing street A.
+- A third issue is if after the pedestrian light turns off the traffic lights for the two streets become desynchronized. However, because both streets' lights use the same timings in their logic, they never get out of sync to begin with. Since the specified pedestrian crossing time is 60 seconds, which is less than the total red cycle time of 70s, the interruption in the light cycle from the pedestrian light never exceeds one period.
+- A fourth concern, while more related to the management of heavy traffic such as during rush hour than explicitly safety, is that if when a pedestrian crosses, all traffic is stopped for the allotted 60 seconds, traffic jams may increase unnecessarily, regardless if their paths intersect. This is also not an issue since traffic on the opposite street is allowed to continue normally.
+- In a similar light, if pedestrians could retrigger the pedestrian light within the interval of the first press, then traffic could be interrupted for far longer than 60 seconds. Since the pedestrian crossing button is only responsive to one press at a time, it fairly alternates between pedestrians crossing, and vehicles driving through the intersection.
+- The last concern is a matter of robustness. Namely, if pedestrians happen to press their respective buttons simultaneously, there is a contingency in place that gives priority over to the pedestrian crossing street A.
 
 = Conclusions
 
