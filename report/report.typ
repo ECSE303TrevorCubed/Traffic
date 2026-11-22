@@ -78,7 +78,13 @@ We observed that there are only 3 states per street, plus the maintenance state 
   caption: [Pedestrian Traffic Controller Circuit],
 )
 
-Similarly to the flowchart without the pedestrian lights, there is a main cycle that the states iterate between. We know that the pedestrians are safe since any state with a pedestrian light has the cross traffic lights off. We allow the parallel traffic to the pedestrians to continue as this does not pose a threat to walkers.
+The pedestrian crossing rules described above were determined to be safe through a few intuitive verifications.
+- The first safety concern is that a pedesrian may be permitted to cross when that street's traffic has not been stopped. This is not a concern since when the pedestrian light turns on the corresponding street's red light also turns on.
+- The second concern is if the lights respond immediately to the pedestrian pressing the button, a red light may activate without warning (no pale green light) and cause more accidents. This is addressed by the fact that the pedestrian light only turns on after the current red or green light phase has completed.
+- A third issue, is if after the pedestrian light turns off that the traffic lights for the two streets become desyncronized. However, because both streets' lights use the same timings in their logic, they never get out of sync to begin with. Since the specified pedestrian crossing time is 60 seconds which is less than the total red cycle time of 70s, the interuption in the light cycle from the pedestrian light never exceeds one period.
+- A fourth concern, while more related to the management of heavy traffic such as during rush hour than explicitly saftey, is that if when a pedestrian crosses, all traffic is stopped for the allotted 60 seconds, traffic jams may increase unnecessarily  regardless if their paths intersect. This is also not an issue since traffic on the opposite street is allowed to continue normally.
+- In a similar light, if pedestrians could retrigger the pedestrian light within the interval of the first press, then traffic could be interupted for far longer than 60 seconds. Since the predestrian crossing button is only responsive to one press at a time, it fairly alternates between pedestrians crossing, and vehicles driving through the intersection.
+- The last concern is a matter of robustness. Namely, if pedestrians happen to press their respective buttons simultaneously, there is a contigency in place that gives priority over to the pedestrian crossing street A.
 
 = Conclusions
 
