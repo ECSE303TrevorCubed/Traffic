@@ -1,10 +1,10 @@
 flowchart TB
-    ag["A: green\nB: red"] --"6s"--> ap
-    ap["A: pale green\nB: red"] --"2s"--> ar
-    ar["A: red\nB: delay red"] --"2s"--> bg
-    bg["A: red\nB: green"] --"6s"--> bp
-    bp["A: red\nB: pale green"] --"2s"--> br
-    br["A: delay red\nB: red"] --"2s"--> ag
+    ag["A: green\nB: red"] --"50s"--> ap
+    ap["A: pale green\nB: red"] --"10s"--> ar
+    ar["A: red\nB: delay red"] --"10s"--> bg
+    bg["A: red\nB: green"] --"50s"--> bp
+    bp["A: red\nB: pale green"] --"10s"--> br
+    br["A: delay red\nB: red"] --"10s"--> ag
     maintain["MAINTAINENCE\nA: red\nB: red"]
     ap --"OFF pressed"--> maintain
     bp --"OFF pressed"--> maintain
